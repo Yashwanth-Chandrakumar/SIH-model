@@ -24,7 +24,7 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
 
     device = select_device(device)  # select device
     half = device.type != 'cpu'
-    flowers = tf.keras.models.load_model("D:/Downloads/action_classifier3.h5")
+    flowers = tf.keras.models.load_model("/content/drive/MyDrive/actn.h5")
     model = attempt_load(poseweights, map_location=device)  # Load model
     _ = model.eval()
     names = model.module.names if hasattr(model, 'module') else model.names  # get class names
@@ -100,7 +100,7 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
                             preds = flowers.predict(img)
 
                             max_idx = np.argmax(preds)
-
+                            acc = str(max(preds)*100)
                             kpts = pose[det_index, 6:]
                             label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                             plot_one_box_kpt(xyxy, im0, label=label, color=colors(c, True),
@@ -112,7 +112,7 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
                                 text = "Jumping"
                             elif max_idx == 1:
                                 text = "Running"
-                            else:
+                            elif max_idx == 2:
                                 text = "Walking"
 
                         # Add the action text above each person's bounding box
@@ -120,7 +120,10 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
                             font_scale = 1
                             font_color = (0, 0, 255)
                             text_position = (int(xyxy[0]) + 50, int(xyxy[1]) - 10)  # Adjust the text position
-
+                            print(preds," ",text)
+                            atc = "Accuracy: "
+                            cv2.putText(im0, atc, (50,100), font, font_scale, font_color, 2)
+                            cv2.putText(im0, acc+"%", (40,100), font, font_scale, font_color, 2)
                             cv2.putText(im0, text, text_position, font, font_scale, font_color, 2)
 
                 end_time = time.time()  # Calculation for FPS
