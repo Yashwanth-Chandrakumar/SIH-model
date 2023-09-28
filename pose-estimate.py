@@ -98,9 +98,9 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
                             img = img / 255
 
                             preds = flowers.predict(img)
-
                             max_idx = np.argmax(preds)
-                            acc = str(max(preds)*100)
+                            act = np.max(preds)
+                            acc = str(round(act*100,3))
                             kpts = pose[det_index, 6:]
                             label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                             plot_one_box_kpt(xyxy, im0, label=label, color=colors(c, True),
@@ -122,8 +122,8 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
                             text_position = (int(xyxy[0]) + 50, int(xyxy[1]) - 10)  # Adjust the text position
                             print(preds," ",text)
                             atc = "Accuracy: "
-                            cv2.putText(im0, atc, (50,100), font, font_scale, font_color, 2)
-                            cv2.putText(im0, acc+"%", (40,100), font, font_scale, font_color, 2)
+                            cv2.putText(im0, atc, (50,80), font, font_scale, (0, 255, 0), 2)
+                            cv2.putText(im0, acc+"%", (220,80), font, font_scale, (0, 255, 0), 2)
                             cv2.putText(im0, text, text_position, font, font_scale, font_color, 2)
 
                 end_time = time.time()  # Calculation for FPS
