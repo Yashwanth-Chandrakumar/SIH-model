@@ -127,7 +127,30 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
 
                 im0 = cv2.cvtColor(im0, cv2.COLOR_RGB2BGR)  # reshape image format to (BGR)
                 gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+                image_bytes = cv2.imencode('.jpg', im0)[1].tobytes()
+                image_file_like = io.BytesIO(image_bytes)
+                unknown_image = face_recognition.load_image_file(image_file_like)
+                face_locations = face_recognition.face_locations(unknown_image)
+                face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+                pil_image = Image.fromarray(unknown_image)
+                draw = ImageDraw.Draw(pil_image)
+                for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+                  matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
 
+                  name = "Unknown"
+
+                  face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                  best_match_index = np.argmin(face_distances)
+                  if matches[best_match_index]:
+                      name = known_face_names[best_match_index]
+
+                  # Draw a rectangle around the face
+                  cv2.rectangle(im0, (left, top), (right, bottom), (0, 255, 0), 2)  # Draw a green rectangle
+
+                  # Draw a label with a name below the face
+                  text_width, text_height = cv2.getTextSize(name, cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)[0]
+                  cv2.rectangle(im0, (left, bottom - text_height - 10), (right, bottom), (0, 255, 0), cv2.FILLED)
+                  cv2.putText(im0, name, (left + 6, bottom - text_height - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)
                 for i, pose in enumerate(output_data):  # detections per image
                     if len(pose):  # check if there are detected poses
                         text =""
@@ -141,47 +164,7 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
                             max_idx = np.argmax(preds)
                             act = np.max(preds)
                             acc = str(round(act*100,3))
-                            image_bytes = cv2.imencode('.jpg', im0)[1].tobytes()
-                            image_file_like = io.BytesIO(image_bytes)
-                            unknown_image = face_recognition.load_image_file(image_file_like)
-                            face_locations = face_recognition.face_locations(unknown_image)
-                            face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
-                            pil_image = Image.fromarray(unknown_image)
-                            draw = ImageDraw.Draw(pil_image)
-
                             
-
-# ... (previous code)
-
-                        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-                            # See if the face is a match for the known face(s)
-                            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-
-                            name = "Unknown"
-
-                            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                            best_match_index = np.argmin(face_distances)
-                            if matches[best_match_index]:
-                                name = known_face_names[best_match_index]
-
-                            # Convert the image to a PIL Image so you can use the draw module
-                            pil_image = Image.fromarray(frame)
-
-                            # Draw a rectangle around the face
-                            draw = ImageDraw.Draw(pil_image)
-                            draw.rectangle([left, top, right, bottom], outline=(255, 0, 0))
-
-                            # Draw a label with a name below the face
-                            text_width, text_height = draw.textsize(name)
-                            draw.rectangle([(left, bottom - text_height - 10), (right, bottom)], fill=(0, 0, 255), outline=(0, 0, 255))
-                            draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
-
-                            # Convert the PIL Image back to an OpenCV image
-                            frame = np.array(pil_image)
-
-# ... (rest of the code)
-
-
                             
                             kpts = pose[det_index, 6:]
                             label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
