@@ -19,30 +19,30 @@ import tensorflow as tf
 import io
 
 @torch.no_grad()
-def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', view_img=False,
+def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4",img1="/content/SIH-model/utils/images/1295.jpg",img2="/content/SIH-model/utils/images/400.jpg",img3="/content/SIH-model/utils/images/524.jpg", device='cpu', view_img=False,
         save_conf=False, line_thickness=3, hide_labels=False, hide_conf=True):
-    face_2 = face_recognition.load_image_file("/content/1295.jpg")
+    face_2 = face_recognition.load_image_file(img1)
     face_2_encodings = face_recognition.face_encodings(face_2)
     if face_2_encodings:
         face_2_encoding = face_2_encodings[0]
     else:
-        print("No face encodings found in the second image.")
+        print("No face encodings found in the first image.")
 
-    face_4 = face_recognition.load_image_file("/content/400.jpg")
+    face_4 = face_recognition.load_image_file(img2)
     face_4_encodings = face_recognition.face_encodings(face_4)
     if face_4_encodings:
         face_4_encoding = face_4_encodings[0]
     else:
-        print("No face encodings found in the fourth image.")
+        print("No face encodings found in the second image.")
 
     
 
-    face_6 = face_recognition.load_image_file("/content/524.jpg")
+    face_6 = face_recognition.load_image_file(img3)
     face_6_encodings = face_recognition.face_encodings(face_6)
     if face_6_encodings:
         face_6_encoding = face_6_encodings[0]
     else:
-        print("No face encodings found in the sixth image.")
+        print("No face encodings found in the third image.")
 
     known_face_encodings = [
          face_2_encoding,
@@ -51,8 +51,8 @@ def run(poseweights="yolov7-w6-pose.pt", source="football1.mp4", device='cpu', v
     ]
     known_face_names = [
         "Vignesh",
-        "Vignesh- Suspect",
-        "Vignesh -",
+        "Vignesh",
+        "Vignesh",
         
 
     ]
@@ -242,6 +242,9 @@ def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--poseweights', nargs='+', type=str, default='yolov7-w6-pose.pt', help='model path(s)')
     parser.add_argument('--source', type=str, default='football1.mp4', help='video/0 for webcam')  # video source
+    parser.add_argument('--img1', type=str, default='/content/SIH-model/utils/images/1295.jpg', help='image 1 for face detection')  # video source
+    parser.add_argument('--img2', type=str, default='/content/SIH-model/utils/images/400.jpg', help='image 2')  # video source
+    parser.add_argument('--img3', type=str, default='/content/SIH-model/utils/images/524.jpg', help='image 3')  # video source
     parser.add_argument('--device', type=str, default='cpu', help='cpu/0,1,2,3(gpu)')  # device arguments
     parser.add_argument('--view-img', action='store_true', help='display results')  # display results
     parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')  # save confidence in txt writing
