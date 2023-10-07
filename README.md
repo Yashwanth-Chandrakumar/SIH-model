@@ -75,7 +75,7 @@ python pose-estimate.py --source 1 --view-img
 python facerec.py --source "your custom video.mp4" --img1 "image file path 1" --img2 "image file path 2" --img3 "image file path 3" --device 0
 
 #For Multiple Face Recognition (One to three images of the different person)
-python multirec.py --source "your custom video.mp4" --img1 "image file path 1" --img2 "image file path 2" --img3 "image file path 3" --device 0
+python mulfacerec.py --source "your custom video.mp4" --img1 "image file path 1" --img2 "image file path 2" --img3 "image file path 3" --device 0
 ```
 
 - Output file will be created in the working directory with name <b>["your-file-name-without-extension"+"_keypoint.mp4"]</b>
